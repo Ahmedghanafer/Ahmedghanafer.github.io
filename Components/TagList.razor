@@ -1,0 +1,27 @@
+@*  A stack chip row. Presentational only — the list is decoration around the
+    text, so it is marked up as a list but hidden from the a11y tree's naming. *@
+
+@if (Items is { Count: > 0 })
+{
+    <ul class="tags @Class" aria-label="@Label">
+        @foreach (var item in Items)
+        {
+            <li>
+                <span class="tag @Variant">@item</span>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<string>? Items { get; set; }
+
+    /// <summary>Accessible name for the group, e.g. "Technologies used".</summary>
+    [Parameter] public string Label { get; set; } = "Technologies";
+
+    [Parameter] public bool Accent { get; set; }
+    [Parameter] public bool Plain { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    private string? Variant => Accent ? "tag--accent" : Plain ? "tag--plain" : null;
+}

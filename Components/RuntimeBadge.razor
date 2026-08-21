@@ -1,0 +1,74 @@
+@implements IDisposable
+@inject JsInterop Js
+
+@*
+    The "built in Blazor WebAssembly" signal, made of measurements rather than a
+    logo. Everything shown is read from this browser on this page load; if the
+    timing API is unavailable the row simply doesn't render.
+*@
+
+<Card Class="runtime-card" aria-label="Runtime information">
+    <div class="runtime-card__head">
+        <span>Runtime</span>
+        <span>C# · WebAssembly</span>
+    </div>
+
+    <div class="runtime-card__row">
+        <span>framework</span>
+        <b>Blazor WASM · .NET&nbsp;8</b>
+    </div>
+    <div class="runtime-card__row">
+        <span>js framework</span>
+        <b>none</b>
+    </div>
+
+    @if (_stats is not null)
+    {
+        @if (_stats.BootMs > 0)
+        {
+            <div class="runtime-card__row">
+                <span>first paint</span>
+                <b>@Format(_stats.BootMs) ms</b>
+            </div>
+        }
+        @if (_stats.TransferKb >= 256)
+        {
+            <div class="runtime-card__row">
+                <span>transferred</span>
+                <b>@Format(_stats.TransferKb) KB</b>
+            </div>
+        }
+        @if (_stats.Cores > 0)
+        {
+            <div class="runtime-card__row">
+                <span>cores seen</span>
+                <b>@_stats.Cores</b>
+            </div>
+        }
+    }
+
+    <p class="runtime-card__note">
+        This page is a component tree compiled to WebAssembly. Routing, state, the theme
+        and every chart on the case study are C#. The JavaScript is one module of about
+        a hundred lines, for the four things the DOM owns.
+    </p>
+</Card>
+
+@code {
+    private BootStats? _stats;
+    private bool _disposed;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _disposed) return;
+
+        // Measured after the first render, so the number describes a page that
+        // was actually on screen rather than one that was still downloading.
+        _stats = await Js.GetBootStatsAsync();
+        if (!_disposed && _stats is not null) StateHasChanged();
+    }
+
+    private static string Format(int value) => value.ToString("N0", CultureInfo.InvariantCulture);
+
+    public void Dispose() => _disposed = true;
+}

@@ -1,0 +1,190 @@
+@*
+    The freshness decay curve, live.
+
+    This is the production formula, ported to C# and evaluated in the browser by
+    the .NET runtime:
+
+        factor = 0.2 + 0.8 · e^(−sellAgeH / 48) · e^(−matAgeH / 96)
+
+    Move the sliders and the curve, the marker and the confidence score all
+    recompute. It is here because a formula in a code block asks to be believed,
+    and a formula you can push on can be checked.
+*@
+
+<div class="lab">
+
+    <div class="lab__chart">
+        <svg viewBox="0 0 440 240" role="img" aria-label="@ChartSummary">
+
+            @* Horizontal guides. Razor reserves <text> inside code blocks, so the
+               labels are written out rather than looped — five of them, once. *@
+            @foreach (var guide in Guides)
+            {
+                <line x1="38" x2="428" y1="@N(Y(guide.Value))" y2="@N(Y(guide.Value))"
+                      style="stroke:var(--c-line);stroke-width:1"
+                      stroke-dasharray="@(guide.Dashed ? "3 3" : null)" />
+            }
+
+            <text x="31" y="@N(Y(1.0) + 3.5)" text-anchor="end" class="lab__tick">1.0</text>
+            <text x="31" y="@N(Y(0.6) + 3.5)" text-anchor="end" class="lab__tick">0.6</text>
+            <text x="31" y="@N(Y(0.2) + 3.5)" text-anchor="end" class="lab__tick">0.2</text>
+
+            @* Time axis *@
+            <text x="@N(X(0))" y="228" text-anchor="middle" class="lab__tick">0 h</text>
+            <text x="@N(X(24))" y="228" text-anchor="middle" class="lab__tick">24 h</text>
+            <text x="@N(X(48))" y="228" text-anchor="middle" class="lab__tick">48 h</text>
+            <text x="@N(X(96))" y="228" text-anchor="middle" class="lab__tick">96 h</text>
+            <text x="@N(X(168))" y="228" text-anchor="middle" class="lab__tick">168 h</text>
+
+            <path d="@AreaPath" style="fill:var(--c-accent-soft);stroke:none" />
+            <path d="@CurvePath"
+                  style="fill:none;stroke:var(--c-accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
+
+            @* current position *@
+            <line x1="@N(X(SellAgeH))" x2="@N(X(SellAgeH))" y1="@N(Y(Factor))" y2="210"
+                  style="stroke:var(--c-accent-line);stroke-width:1" stroke-dasharray="2 3" />
+            <circle cx="@N(X(SellAgeH))" cy="@N(Y(Factor))" r="5"
+                    style="fill:var(--c-accent);stroke:var(--c-surface);stroke-width:2" />
+        </svg>
+    </div>
+
+    <div class="lab__controls">
+
+        <div class="slider">
+            <div class="slider__row">
+                <label class="slider__label" for="lab-sell">Sell price age</label>
+                <span class="slider__value">@SellAgeH h</span>
+            </div>
+            <input id="lab-sell" type="range" min="0" max="168" step="1"
+                   @bind="SellAgeH" @bind:event="oninput" />
+        </div>
+
+        <div class="slider">
+            <div class="slider__row">
+                <label class="slider__label" for="lab-mat">Material price age</label>
+                <span class="slider__value">@MatAgeH h</span>
+            </div>
+            <input id="lab-mat" type="range" min="0" max="168" step="1"
+                   @bind="MatAgeH" @bind:event="oninput" />
+        </div>
+
+        <div class="slider">
+            <div class="slider__row">
+                <label class="slider__label" for="lab-vol">Sold volume</label>
+                <span class="slider__value">@Volume</span>
+            </div>
+            <input id="lab-vol" type="range" min="0" max="200" step="1"
+                   @bind="Volume" @bind:event="oninput" />
+        </div>
+
+        <div class="presets">
+            @foreach (var preset in Presets)
+            {
+                <button type="button"
+                        class="preset"
+                        aria-pressed="@(IsActive(preset) ? "true" : "false")"
+                        @onclick="() => Apply(preset)">@preset.Label</button>
+            }
+        </div>
+
+        <div class="lab__readout">
+            <span class="lab__readout-value" aria-live="polite">@Factor.ToString("0.00", Inv)</span>
+            <span class="lab__readout-label">rank multiplier</span>
+        </div>
+
+        <div class="lab__readout">
+            <span class="lab__readout-value">@Confidence</span>
+            <span class="lab__readout-label">confidence · @AgePoints age + @VolumePoints volume</span>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    private static readonly System.Globalization.CultureInfo Inv =
+        System.Globalization.CultureInfo.InvariantCulture;
+
+    private const double Tau = 48.0;    // sell-side time constant, in hours
+    private const double Floor = 0.2;   // stale rows sink, but never die
+
+    private int SellAgeH { get; set; }
+    private int MatAgeH { get; set; }
+    private int Volume { get; set; } = 45;
+
+    private sealed record Preset(string Label, int Sell, int Mat, int Volume);
+    private sealed record Guide(double Value, string Label, bool Dashed = false);
+
+    private static readonly Preset[] Presets =
+    {
+        new("Fresh", 0, 0, 120),
+        new("Sell 24 h", 24, 0, 45),
+        new("Sell 24 h + mats 48 h", 24, 48, 45),
+        new("Five days old", 120, 96, 6),
+    };
+
+    private static readonly Guide[] Guides =
+    {
+        new(1.0, "1.0"),
+        new(0.6, "0.6"),
+        new(0.2, "0.2", Dashed: true),
+    };
+
+    /// <summary>Raw product of both per-leg curves, before the floor is applied.</summary>
+    private double Raw => Math.Exp(-SellAgeH / Tau) * Math.Exp(-MatAgeH / (Tau * 2));
+
+    private double Factor => Floor + (1 - Floor) * Raw;
+
+    // Both halves are 0-50. The age half reuses the exact curve the ranker uses,
+    // so confidence and ranking can never disagree about what "fresh" means.
+    private int AgePoints => (int)Math.Round(50 * Raw);
+
+    private int VolumePoints => Volume >= 100 ? 50
+                              : Volume >= 30 ? 40
+                              : Volume >= 10 ? 25
+                              : Volume > 0 ? 10
+                              : 0;
+
+    private int Confidence => AgePoints + VolumePoints;
+
+    private string ChartSummary =>
+        $"Freshness decay curve. With a sell price {SellAgeH} hours old and materials "
+        + $"{MatAgeH} hours old, the rank multiplier is {Factor.ToString("0.00", Inv)} "
+        + $"and confidence is {Confidence} out of 100.";
+
+    /* --- plotting ------------------------------------------------------- */
+
+    private static double X(double hours) => 38 + hours / 168.0 * 390;
+
+    private static double Y(double factor) => 14 + (1 - factor) * 196;
+
+    private static string N(double value) => value.ToString("0.##", Inv);
+
+    private IEnumerable<(double H, double F)> Curve
+    {
+        get
+        {
+            for (var h = 0; h <= 168; h += 3)
+            {
+                var raw = Math.Exp(-h / Tau) * Math.Exp(-MatAgeH / (Tau * 2));
+                yield return (h, Floor + (1 - Floor) * raw);
+            }
+        }
+    }
+
+    private string CurvePath =>
+        string.Join(" ", Curve.Select((p, i) => $"{(i == 0 ? "M" : "L")}{N(X(p.H))} {N(Y(p.F))}"));
+
+    private string AreaPath =>
+        $"{CurvePath} L{N(X(168))} {N(Y(0))} L{N(X(0))} {N(Y(0))} Z";
+
+    /* --- presets -------------------------------------------------------- */
+
+    private bool IsActive(Preset p) => p.Sell == SellAgeH && p.Mat == MatAgeH && p.Volume == Volume;
+
+    private void Apply(Preset p)
+    {
+        SellAgeH = p.Sell;
+        MatAgeH = p.Mat;
+        Volume = p.Volume;
+    }
+}

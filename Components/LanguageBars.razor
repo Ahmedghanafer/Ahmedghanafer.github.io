@@ -1,0 +1,28 @@
+@*
+    Language proficiency. The meter is decorative — the level is stated in words
+    first, so the bar carries no information a screen reader would miss.
+*@
+
+<div class="languages">
+    @foreach (var (lang, index) in Items.Select((l, i) => (l, i)))
+    {
+        <Reveal Class="lang" Delay="@(index * 90)">
+            <div class="lang__row">
+                <span class="lang__name">@lang.Name</span>
+                <span class="lang__level">@lang.Level</span>
+            </div>
+            <div class="lang__meter" aria-hidden="true">
+                <div class="lang__fill" style="--fill:@Fraction(lang.Strength)"></div>
+            </div>
+        </Reveal>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<LanguageSkill> Items { get; set; } = Array.Empty<LanguageSkill>();
+
+    private static string Fraction(int strength) =>
+        Math.Clamp(strength, 0, 100) / 100d is var f
+            ? f.ToString("0.##", CultureInfo.InvariantCulture)
+            : "1";
+}

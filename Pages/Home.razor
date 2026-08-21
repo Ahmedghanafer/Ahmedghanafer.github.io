@@ -1,0 +1,87 @@
+@page "/"
+
+<PageTitle>Ahmed Ghanafer — Fullstack .NET Developer</PageTitle>
+
+@{
+    var me = SiteData.Me;
+}
+
+<section class="hero">
+    <div class="shell">
+        <div class="hero__grid">
+            <div>
+                <p class="hero__status">
+                    <span class="pulse" aria-hidden="true"></span>
+                    <span>@me.Location · open to interesting work</span>
+                </p>
+
+                <h1 class="hero__name">
+                    Ahmed<br />
+                    <span class="surname">Ghanafer</span>
+                </h1>
+
+                <p class="hero__role">
+                    <span>@me.Role</span>
+                    <span class="rule" aria-hidden="true"></span>
+                </p>
+
+                <p class="lede">@me.Pitch</p>
+
+                <div class="hero__actions">
+                    <a class="btn btn--primary" href="@($"/projects/{ProjectCatalog.ApfSlug}")">
+                        Read the case study
+                        <Icon Name="arrow-right" Size="16" />
+                    </a>
+                    <a class="btn" href="mailto:@ContactEmail">
+                        <Icon Name="mail" Size="16" />
+                        Get in touch
+                    </a>
+                </div>
+            </div>
+
+            <Reveal Delay="120">
+                <RuntimeBadge />
+            </Reveal>
+        </div>
+    </div>
+</section>
+
+<Section Id="work" Index="01" Title="Where I've worked"
+         Kicker="@SiteData.Me.Summary">
+    <ExperienceTimeline Items="SiteData.Experience" />
+</Section>
+
+<Section Id="projects" Index="02" Title="Things I built" Tint="true"
+         Kicker="One of these I designed, shipped and still operate. It gets the long write-up; the others get a paragraph until they've earned more.">
+    <ProjectShowcase Items="ProjectCatalog.All" />
+</Section>
+
+<Section Id="skills" Index="03" Title="What I work with"
+         Kicker="Grouped by what I actually reach for, not by how long the list looks.">
+    <SkillsGrid Items="SiteData.Skills" />
+
+    <div class="split">
+        <Reveal>
+            <div>
+                <h3 class="split__title">Languages</h3>
+                <LanguageBars Items="SiteData.Languages" />
+            </div>
+        </Reveal>
+
+        <Reveal Delay="100">
+            <div>
+                <h3 class="split__title">Education</h3>
+                <EducationList Items="SiteData.Schooling" />
+            </div>
+        </Reveal>
+    </div>
+</Section>
+
+<Section Id="contact" Index="04" Title="Get in touch" Tint="true"
+         Kicker="Stockholm-based, working in English, Swedish or Arabic. Happy to talk about backend architecture, data layers, or why your API is sending the same field name a hundred thousand times.">
+    <ContactLinks Links="SiteData.Me.Links" />
+</Section>
+
+@code {
+    private const string ContactEmail = "ahmed.ghanafer@gmail.com";
+}

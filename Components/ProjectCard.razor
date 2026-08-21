@@ -1,0 +1,43 @@
+@*  Supporting project card. If the project has a destination, the whole card is
+    the click target — but the link itself stays a real link, so keyboard and
+    screen-reader users get the same single, correctly-named control. *@
+
+<article class="card project-card reveal @(HasLink ? "card--interactive" : null)">
+
+    <div class="project-card__head">
+        <h3 class="mini__title">
+            @if (HasLink)
+            {
+                <a class="link card__stretch"
+                   href="@Href"
+                   target="@(IsExternal ? "_blank" : null)"
+                   rel="@(IsExternal ? "noopener noreferrer" : null)">@Project.Title</a>
+            }
+            else
+            {
+                @Project.Title
+            }
+        </h3>
+        <span class="project-card__status">@Project.Status</span>
+    </div>
+
+    <p class="eyebrow" style="margin-bottom:.75rem">@Project.Kind</p>
+
+    <p>@Project.Description</p>
+
+    <div style="margin-top:1rem">
+        <TagList Items="@Project.Stack" Label="@($"{Project.Title} stack")" Plain="true" />
+    </div>
+
+</article>
+
+@code {
+    [Parameter, EditorRequired] public ProjectSummary Project { get; set; } = default!;
+
+    private string? Href => Project.CaseStudyHref ?? Project.ExternalHref;
+
+    private bool HasLink => !string.IsNullOrWhiteSpace(Href);
+
+    private bool IsExternal => string.IsNullOrWhiteSpace(Project.CaseStudyHref)
+                            && !string.IsNullOrWhiteSpace(Project.ExternalHref);
+}

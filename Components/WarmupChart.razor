@@ -1,0 +1,45 @@
+@*
+    Six consecutive fixed-rate passes on one machine, unchanged data.
+
+    The shape is the point: the first pass pays for a cold page cache and a cold
+    working set, and the curve flattens once the data is resident. Bars are drawn
+    as plain elements rather than SVG so they inherit the type scale and the
+    theme tokens directly.
+*@
+
+<figure class="chart">
+    <div class="chart__bars reveal" role="img" aria-label="@AltText">
+        @foreach (var run in Items)
+        {
+            <div class="chart__col">
+                <span class="chart__value">@run.Seconds.ToString("0.#", CultureInfo.InvariantCulture)s</span>
+                <div class="chart__bar-wrap">
+                    <span class="chart__bar" style="--h:@Height(run.Seconds)"></span>
+                </div>
+                <span class="chart__label">@run.Label</span>
+                <span class="chart__note">@run.Rss</span>
+            </div>
+        }
+    </div>
+
+    <figcaption class="chart__caption">
+        Pass duration over six consecutive runs on the same box. Peak resident memory across
+        the same span fell from 281 MB to 137 MB.
+    </figcaption>
+</figure>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<(string Label, double Seconds, string? Rss)> Items { get; set; }
+        = Array.Empty<(string, double, string?)>();
+
+    private double Peak => Items.Count == 0 ? 1 : Items.Max(r => r.Seconds);
+
+    private string Height(double seconds) =>
+        Math.Clamp(seconds / Peak, 0.04, 1).ToString("0.###", CultureInfo.InvariantCulture);
+
+    private string AltText =>
+        "Pass duration falling across six consecutive runs: "
+        + string.Join(", ", Items.Select(r => r.Seconds.ToString("0.#", CultureInfo.InvariantCulture) + " seconds"))
+        + ".";
+}

@@ -1,0 +1,114 @@
+@implements IDisposable
+@inject NavigationManager Nav
+@inject JsInterop Js
+
+<header class="site-header">
+    <div class="shell site-header__inner">
+
+        <a class="brand" href="" @onclick="GoHome" @onclick:preventDefault>
+            <span class="brand__mark" aria-hidden="true">AG</span>
+            <span>
+                Ahmed Ghanafer<br />
+                <span class="brand__sub">Fullstack .NET</span>
+            </span>
+        </a>
+
+        <nav class="site-nav" aria-label="Primary">
+            <ul class="site-nav__list" data-open="@(_menuOpen ? "true" : "false")" id="primary-nav">
+                @foreach (var item in Sections)
+                {
+                    <li>
+                        <a class="navlink"
+                           href="@Href(item.Id)"
+                           aria-current="@(IsCurrent(item.Id) ? "true" : null)"
+                           @onclick="() => JumpTo(item.Id)"
+                           @onclick:preventDefault>@item.Label</a>
+                    </li>
+                }
+            </ul>
+
+            <button class="icon-btn nav-toggle"
+                    type="button"
+                    aria-expanded="@(_menuOpen ? "true" : "false")"
+                    aria-controls="primary-nav"
+                    aria-label="@(_menuOpen ? "Close menu" : "Open menu")"
+                    @onclick="() => _menuOpen = !_menuOpen">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                     stroke-linecap="round" aria-hidden="true">
+                    @if (_menuOpen)
+                    {
+                        <path d="M6 6l12 12M18 6L6 18" />
+                    }
+                    else
+                    {
+                        <path d="M4 8h16M4 16h16" />
+                    }
+                </svg>
+            </button>
+
+            <ThemeToggle />
+        </nav>
+    </div>
+</header>
+
+@code {
+    private bool _menuOpen;
+    private string _activeSection = "";
+
+    private sealed record NavItem(string Id, string Label);
+
+    private static readonly NavItem[] Sections =
+    {
+        new("work", "Work"),
+        new("projects", "Projects"),
+        new("skills", "Skills"),
+        new("contact", "Contact"),
+    };
+
+    protected override void OnInitialized() => Nav.LocationChanged += OnLocationChanged;
+
+    private bool OnHome
+    {
+        get
+        {
+            var path = Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#')[0].Trim('/');
+            return path.Length == 0;
+        }
+    }
+
+    // On the home page these are ordinary in-page anchors, so they keep working
+    // with JS disabled and can be opened in a new tab meaningfully.
+    private string Href(string id) => OnHome ? $"#{id}" : $"/#{id}";
+
+    private bool IsCurrent(string id) => OnHome && _activeSection == id;
+
+    private async Task JumpTo(string id)
+    {
+        _menuOpen = false;
+        _activeSection = id;
+
+        if (!OnHome)
+        {
+            Nav.NavigateTo("/");
+            // Let the home page commit its first render before looking for the target.
+            await Task.Yield();
+        }
+
+        await Js.ScrollToIdAsync(id);
+    }
+
+    private void GoHome()
+    {
+        _menuOpen = false;
+        _activeSection = "";
+        Nav.NavigateTo("/");
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        _menuOpen = false;
+        StateHasChanged();
+    }
+
+    public void Dispose() => Nav.LocationChanged -= OnLocationChanged;
+}

@@ -1,0 +1,23 @@
+@*  Skills, grouped. The grouping is the content — an undifferentiated list of
+    forty technologies says nothing about what someone actually reaches for. *@
+
+<div class="grid-auto">
+    @foreach (var (group, index) in Items.Select((g, i) => (g, i)))
+    {
+        <Reveal Delay="@(index * 70)">
+            <Card>
+                <div class="skill-group">
+                    <div class="skill-group__title">
+                        <h3>@group.Title</h3>
+                    </div>
+                    <p class="skill-group__caption">@group.Caption</p>
+                    <TagList Items="group.Items" Label="@($"{group.Title} skills")" />
+                </div>
+            </Card>
+        </Reveal>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<SkillGroup> Items { get; set; } = Array.Empty<SkillGroup>();
+}

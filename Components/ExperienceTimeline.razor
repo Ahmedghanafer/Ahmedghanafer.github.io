@@ -1,0 +1,15 @@
+@*  Roles as an ordered list of TimelineItems — the list semantics matter, because
+    "most recent first" is information. *@
+
+<ol class="timeline plain">
+    @foreach (var role in Items)
+    {
+        <li>
+            <TimelineItem Role="@role" />
+        </li>
+    }
+</ol>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<Role> Items { get; set; } = Array.Empty<Role>();
+}

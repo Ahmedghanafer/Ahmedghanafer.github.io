@@ -1,0 +1,30 @@
+@*
+    Surface primitive. Every raised panel on the site is one of these, so the
+    border, radius, elevation and hover behaviour are defined exactly once.
+*@
+
+<div class="card @Variant @(Interactive ? "card--interactive" : null) @Class" @attributes="Extra">
+    @ChildContent
+</div>
+
+@code {
+    public enum Style { Raised, Flat, Accent }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public Style Appearance { get; set; } = Style.Raised;
+
+    /// <summary>Adds lift-on-hover. Use only when the whole card is a link target.</summary>
+    [Parameter] public bool Interactive { get; set; }
+
+    [Parameter] public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? Extra { get; set; }
+
+    private string? Variant => Appearance switch
+    {
+        Style.Flat => "card--flat",
+        Style.Accent => "card--accent",
+        _ => null,
+    };
+}

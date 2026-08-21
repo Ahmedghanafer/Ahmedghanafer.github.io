@@ -1,0 +1,30 @@
+# Serving the published output as static files from a VPS.
+#
+# `dotnet publish -c Release -o dist` puts everything under dist/wwwroot.
+# Copy that directory to the server; nothing else is needed — no runtime,
+# no reverse-proxied app process. The .NET runtime ships to the browser.
+
+example.com {
+    root * /srv/portfolio
+
+    encode zstd gzip
+
+    # SPA fallback: any path that is not a real file is a client route.
+    try_files {path} /index.html
+    file_server
+
+    # Blazor's fingerprinted framework files are safe to cache hard.
+    @immutable path /_framework/* /_content/*
+    header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+    # index.html must always be revalidated, or a deploy is invisible.
+    @html path /index.html /404.html /
+    header @html Cache-Control "no-cache"
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+}

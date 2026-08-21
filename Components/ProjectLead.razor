@@ -1,0 +1,39 @@
+@*  The centrepiece project. One per page — everything else is a supporting card. *@
+
+<article class="project-lead reveal">
+
+    <div>
+        <span class="project-lead__kind">
+            <Icon Name="layers" Size="14" />
+            @Project.Kind
+        </span>
+
+        <h3 class="project-lead__title">@Project.Title</h3>
+
+        <p class="project-lead__tagline">@Project.Tagline</p>
+
+        <p class="prose">@Project.Description</p>
+
+        <div style="margin-top:1.35rem">
+            <TagList Items="@Project.Stack" Label="@($"{Project.Title} stack")" />
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Project.CaseStudyHref))
+        {
+            <div class="hero__actions">
+                <a class="btn btn--primary" href="@Project.CaseStudyHref">
+                    Read the case study
+                    <Icon Name="arrow-right" Size="16" />
+                </a>
+                <span class="mono" style="color:var(--c-ink-4);align-self:center">@Project.Status</span>
+            </div>
+        }
+    </div>
+
+    <MetricGrid Items="@Project.Metrics" Label="@($"{Project.Title} — measured figures")" />
+
+</article>
+
+@code {
+    [Parameter, EditorRequired] public ProjectSummary Project { get; set; } = default!;
+}

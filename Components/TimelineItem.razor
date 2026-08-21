@@ -1,0 +1,33 @@
+@*  One position on the experience timeline. The meta column sticks while its
+    highlights scroll past, so the reader never loses track of whose job this is. *@
+
+<article class="tl-item reveal">
+
+    <div class="tl-item__meta">
+        <span class="tl-item__period">@Role.Period</span>
+        <div class="tl-item__company">@Role.Company</div>
+        @if (!string.IsNullOrWhiteSpace(Role.Location))
+        {
+            <div class="tl-item__place">@Role.Location</div>
+        }
+    </div>
+
+    <div>
+        <h3 class="tl-item__title">@Role.Title</h3>
+        <p class="tl-item__blurb">@Role.Blurb</p>
+
+        <ul class="bullets">
+            @foreach (var point in Role.Highlights)
+            {
+                <li>@point</li>
+            }
+        </ul>
+
+        <TagList Items="@Role.Stack" Label="@($"Technologies at {Role.Company}")" Plain="true" />
+    </div>
+
+</article>
+
+@code {
+    [Parameter, EditorRequired] public Role Role { get; set; } = default!;
+}

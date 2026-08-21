@@ -1,0 +1,33 @@
+@*  Measured figures as a real table — readable row by row, selectable, and
+    announced as tabular data rather than as a decorative grid. *@
+
+<div class="table-wrap">
+    <table class="facts">
+        @if (!string.IsNullOrWhiteSpace(Caption))
+        {
+            <caption>@Caption</caption>
+        }
+        <tbody>
+            @foreach (var row in Items)
+            {
+                <tr>
+                    <th scope="row">@row.Label</th>
+                    <td>@row.Value</td>
+                    @if (HasNotes)
+                    {
+                        <td class="note">@row.Note</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<FactRow> Items { get; set; } = Array.Empty<FactRow>();
+    [Parameter] public string? Caption { get; set; }
+
+    // Drop the third column entirely when no row uses it, rather than leaving a
+    // ghost column that only exists in the markup.
+    private bool HasNotes => Items.Any(r => !string.IsNullOrWhiteSpace(r.Note));
+}

@@ -1,0 +1,23 @@
+@*  Education, as a plain list. It is not the strongest part of the CV and the
+    layout says so honestly rather than padding it into cards. *@
+
+<ul class="plain">
+    @foreach (var (item, index) in Items.Select((e, i) => (e, i)))
+    {
+        <li>
+            <Reveal Class="edu-row" Delay="@(index * 70)">
+                <div>
+                    <div class="edu-row__program">@item.Program</div>
+                    <div class="edu-row__school">
+                        @item.School@(string.IsNullOrWhiteSpace(item.Location) ? null : $" · {item.Location}")
+                    </div>
+                </div>
+                <div class="edu-row__period">@item.Period</div>
+            </Reveal>
+        </li>
+    }
+</ul>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<Education> Items { get; set; } = Array.Empty<Education>();
+}

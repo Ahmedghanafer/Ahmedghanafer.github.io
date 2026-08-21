@@ -1,0 +1,23 @@
+@*  A numbered section inside a case study. The id is what the sticky table of
+    contents scroll-spies against, so it is required rather than derived. *@
+
+<section id="@Id" class="cs-section reveal" aria-labelledby="@($"{Id}-heading")">
+
+    <header class="cs-section__head">
+        @if (!string.IsNullOrWhiteSpace(Eyebrow))
+        {
+            <span class="eyebrow cs-section__eyebrow">@Eyebrow</span>
+        }
+        <h2 id="@($"{Id}-heading")">@Title</h2>
+    </header>
+
+    @ChildContent
+
+</section>
+
+@code {
+    [Parameter, EditorRequired] public string Id { get; set; } = "";
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Eyebrow { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

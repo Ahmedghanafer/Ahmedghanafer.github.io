@@ -1,0 +1,30 @@
+@*
+    One centrepiece, then everything else in a grid.
+
+    This component knows no project by name. Adding one means appending to
+    ProjectCatalog — and if it sets IsCentrepiece, it leads instead.
+*@
+
+@if (Lead is not null)
+{
+    <ProjectLead Project="@Lead" />
+}
+
+@if (Supporting.Count > 0)
+{
+    <div class="project-grid">
+        @foreach (var project in Supporting)
+        {
+            <ProjectCard Project="@project" />
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<ProjectSummary> Items { get; set; } = Array.Empty<ProjectSummary>();
+
+    private ProjectSummary? Lead => Items.FirstOrDefault(p => p.IsCentrepiece);
+
+    private IReadOnlyList<ProjectSummary> Supporting =>
+        Items.Where(p => !p.IsCentrepiece).ToList();
+}

@@ -1,0 +1,60 @@
+@implements IAsyncDisposable
+@inject JsInterop Js
+
+@*  Sticky table of contents. Which entry is current is view state, so C# owns it;
+    JavaScript only reports the crossing. Hidden below 1000px by the stylesheet —
+    the sections are short enough to scroll on a phone. *@
+
+<nav class="cs-toc" aria-label="On this page">
+    <p class="cs-toc__title">On this page</p>
+    <ul class="cs-toc__list">
+        @foreach (var entry in Entries)
+        {
+            <li>
+                <a class="cs-toc__link"
+                   href="@($"#{entry.Id}")"
+                   data-active="@(entry.Id == _active ? "true" : null)"
+                   aria-current="@(entry.Id == _active ? "true" : null)"
+                   @onclick="() => JumpTo(entry.Id)"
+                   @onclick:preventDefault>@entry.Label</a>
+            </li>
+        }
+    </ul>
+</nav>
+
+@code {
+    public sealed record Entry(string Id, string Label);
+
+    [Parameter, EditorRequired] public IReadOnlyList<Entry> Entries { get; set; } = Array.Empty<Entry>();
+
+    private DotNetObjectReference<CaseStudyToc>? _self;
+    private string? _active;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        _self = DotNetObjectReference.Create(this);
+        await Js.StartScrollSpyAsync(Entries.Select(e => e.Id).ToArray(), _self);
+    }
+
+    [JSInvokable]
+    public void OnSectionChanged(string id)
+    {
+        if (id == _active) return;
+        _active = id;
+        StateHasChanged();
+    }
+
+    private async Task JumpTo(string id)
+    {
+        _active = id;
+        await Js.ScrollToIdAsync(id);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await Js.StopScrollSpyAsync();
+        _self?.Dispose();
+    }
+}

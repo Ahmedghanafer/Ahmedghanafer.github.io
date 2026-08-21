@@ -1,0 +1,57 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject JsInterop Js
+@inject ThemeService Theme
+@inject NavigationManager Nav
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<SiteHeader />
+
+<main id="main" tabindex="-1">
+    @Body
+</main>
+
+<SiteFooter />
+
+@code {
+    private bool _booted;
+
+    protected override void OnInitialized()
+    {
+        Theme.Changed += StateHasChanged;
+        Nav.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Theme.InitialiseAsync();
+            await Js.WatchHeaderAsync();
+            await Js.MarkReadyAsync();
+            _booted = true;
+        }
+
+        // Reveal targets are created by whichever page just rendered, so the
+        // observer is re-pointed after every render rather than wired per node.
+        if (_booted)
+        {
+            await Js.ScanRevealsAsync();
+        }
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // Blazor keeps the scroll position across route changes; a case study
+        // opened from halfway down the home page should start at its own top.
+        await Js.ScrollToTopAsync();
+        await Js.ScanRevealsAsync();
+    }
+
+    public void Dispose()
+    {
+        Theme.Changed -= StateHasChanged;
+        Nav.LocationChanged -= OnLocationChanged;
+    }
+}

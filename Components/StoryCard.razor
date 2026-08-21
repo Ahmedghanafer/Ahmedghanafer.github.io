@@ -1,0 +1,48 @@
+@*  Problem → fix → measured delta → lesson. The numbers are the evidence; the
+    lesson is the point. *@
+
+<article class="story reveal">
+
+    <header class="story__head">
+        <span class="story__num" aria-hidden="true">@($"{Number:00}")</span>
+        <h3>@Story.Title</h3>
+        <span class="story__kicker">@Story.Kicker</span>
+    </header>
+
+    <div class="story__body">
+
+        <div class="story__part">
+            <span class="story__part-label">What went wrong</span>
+            <p>@Story.Problem</p>
+        </div>
+
+        <div class="story__part">
+            <span class="story__part-label">What fixed it</span>
+            <p>@Story.Fix</p>
+        </div>
+
+        <div class="story__part story__part--result">
+            <span class="story__part-label">Measured</span>
+
+            <p class="story__delta">
+                <span class="story__delta-from">@Story.Before</span>
+                <span class="story__delta-arrow" aria-hidden="true">→</span>
+                <span class="story__delta-to">@Story.After</span>
+            </p>
+
+            <p class="story__delta-note">@Story.DeltaNote</p>
+        </div>
+
+    </div>
+
+    <p class="story__lesson">
+        <span class="story__lesson-label">Lesson</span>
+        @Story.Lesson
+    </p>
+
+</article>
+
+@code {
+    [Parameter, EditorRequired] public EngineeringStory Story { get; set; } = default!;
+    [Parameter] public int Number { get; set; } = 1;
+}

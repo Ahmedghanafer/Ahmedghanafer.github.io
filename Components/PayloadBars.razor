@@ -1,0 +1,32 @@
+@*  Proportional bars for a before/after. The fills animate from the reveal class
+    on the wrapper, so they draw as the reader arrives rather than on page load. *@
+
+<div class="bars reveal @Class" role="list" aria-label="@Label">
+    @foreach (var bar in Items)
+    {
+        <div class="bar__row" role="listitem">
+            <div class="bar__meta">
+                <span class="bar__name">@bar.Name</span>
+                <span class="bar__value">@bar.Value</span>
+            </div>
+            <div class="bar__track">
+                <div class="bar__fill @(bar.Muted ? "bar__fill--muted" : null)"
+                     style="--w:@Scale(bar.Fraction)"></div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    /// <param name="Fraction">0–1, relative to the largest bar in the set.</param>
+    public sealed record Bar(string Name, string Value, double Fraction, bool Muted = false);
+
+    [Parameter, EditorRequired] public IReadOnlyList<Bar> Items { get; set; } = Array.Empty<Bar>();
+    [Parameter] public string Label { get; set; } = "Comparison";
+    [Parameter] public string? Class { get; set; }
+
+    // A sub-pixel bar reads as a rendering bug rather than a small number, so the
+    // scale has a visible floor.
+    private static string Scale(double fraction) =>
+        Math.Clamp(fraction, 0.012, 1).ToString("0.####", System.Globalization.CultureInfo.InvariantCulture);
+}

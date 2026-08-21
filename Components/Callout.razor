@@ -1,0 +1,17 @@
+@*  A labelled aside. Accent by default; neutral when it is a caveat rather than
+    a point being made. *@
+
+<aside class="callout @(Neutral ? "callout--neutral" : null) @Class">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <span class="callout__label">@Label</span>
+    }
+    @ChildContent
+</aside>
+
+@code {
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public bool Neutral { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

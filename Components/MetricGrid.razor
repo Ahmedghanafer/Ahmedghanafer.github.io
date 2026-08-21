@@ -1,0 +1,25 @@
+@*  A hairline grid of headline numbers. Each metric may carry a note, which is
+    where the honest qualifier goes — "per pass", "before compression". *@
+
+@if (Items is { Count: > 0 })
+{
+    <div class="metric-grid @Class" role="list" aria-label="@Label">
+        @foreach (var metric in Items)
+        {
+            <div class="metric" role="listitem">
+                <span class="metric__value">@metric.Value</span>
+                <span class="metric__label">@metric.Label</span>
+                @if (!string.IsNullOrWhiteSpace(metric.Note))
+                {
+                    <span class="metric__note">@metric.Note</span>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<Metric>? Items { get; set; }
+    [Parameter] public string Label { get; set; } = "Key figures";
+    [Parameter] public string? Class { get; set; }
+}

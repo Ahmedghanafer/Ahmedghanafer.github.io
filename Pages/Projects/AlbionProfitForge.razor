@@ -1,0 +1,230 @@
+@page "/projects/albion-profit-forge"
+
+@*
+    A case study owns its own route and its own composition. The next one — a
+    different stack, a different story shape — gets its own page and shares only
+    the primitives: CaseStudySection, ArchitectureFlow, StoryCard, Callout,
+    FactTable, MetricGrid.
+*@
+
+<PageTitle>Albion Profit Forge — case study — Ahmed Ghanafer</PageTitle>
+
+@{
+    var project = ProjectCatalog.BySlug(ProjectCatalog.ApfSlug)!;
+}
+
+<article>
+
+    <header class="cs-hero">
+        <div class="shell">
+            <a class="backlink" href="/#projects">
+                <span aria-hidden="true">←</span>
+                All projects
+            </a>
+
+            <span class="eyebrow">@ApfNarrative.Kind</span>
+            <h1 class="cs-hero__title">@ApfNarrative.Title</h1>
+            <p class="lede cs-hero__standfirst">@ApfNarrative.Standfirst</p>
+
+            <div class="cs-hero__foot">
+                <TagList Items="@project.Stack" Label="Albion Profit Forge stack" />
+            </div>
+
+            <MetricGrid Items="@project.Metrics"
+                        Label="Albion Profit Forge — measured figures"
+                        Class="cs-hero__metrics" />
+        </div>
+    </header>
+
+    <div class="shell">
+        <div class="cs-layout">
+            <div class="cs-body">
+
+                <CaseStudySection Id="cs-problem" Eyebrow="The problem"
+                                  Title="Thousands of items, three servers, prices that expire">
+                    <p class="prose">@ApfNarrative.Problem</p>
+
+                    <Callout Label="The whole design in one paragraph">
+                        <p>@ApfNarrative.Thesis</p>
+                    </Callout>
+
+                    <p class="prose">@ApfNarrative.SplitIdea</p>
+                </CaseStudySection>
+
+                <CaseStudySection Id="cs-architecture" Eyebrow="Architecture"
+                                  Title="From upstream feed to browser">
+                    <p class="prose">
+                        Seven stages, one direction. Each expands: the shape reads at a glance, and the
+                        reasoning is one keystroke away rather than three paragraphs further down.
+                    </p>
+
+                    <ArchitectureFlow Nodes="@ApfCaseStudy.Pipeline" Id="apf-flow" />
+
+                    <Callout Label="Live updates are polling, not push" Neutral="true">
+                        <p>@ApfNarrative.PollingNote</p>
+                        <p>@ApfNarrative.PollingDetail</p>
+                    </Callout>
+                </CaseStudySection>
+
+                <CaseStudySection Id="cs-swap" Eyebrow="The core mechanism"
+                                  Title="Versioned batch, atomic promote">
+                    <p class="prose">
+                        A pass takes tens of seconds and writes about 150,000 rows. Readers must never see a
+                        half-built result set, an empty one, or two builds interleaved across page boundaries.
+                        The answer is not a shadow table — it is a version column, which turns visibility into a
+                        read-path concern instead of a write-path one.
+                    </p>
+
+                    <ol class="steps">
+                        <li>
+                            <b>Open a run.</b> Insert a row into the runs table with status
+                            <code>running</code>; the id it returns <em>is</em> the build version.
+                        </li>
+                        <li>
+                            <b>Stream the rows.</b> Batches are written live under that <code>run_id</code>.
+                            Readers never see them, because every read path resolves the build through
+                            <code>is_current</code>.
+                        </li>
+                        <li>
+                            <b>Promote in one transaction.</b> Demote the old current build, promote this one,
+                            prune superseded rows. Nothing ever observes an intermediate state.
+                        </li>
+                        <li>
+                            <b>Fail safely.</b> A failed run is closed without promotion and its partial rows are
+                            deleted — a broken pass degrades to stale data, never to no data.
+                        </li>
+                        <li>
+                            <b>Reap crashes by age.</b> Runs stuck in <code>running</code> past a timeout are
+                            failed. Age is the safety interlock, not the idempotency guard: a standalone CLI run
+                            cannot see a long-lived app's pass in flight, so reaping on status alone would delete
+                            a live build's streamed rows.
+                        </li>
+                    </ol>
+
+                    <Callout Label="The invariant, in the code that enforces it">
+                        <p>@ApfNarrative.SwapNote</p>
+                    </Callout>
+
+                    <FactTable Items="@ApfNarrative.RunFacts"
+                               Caption="Current build, queried from the database" />
+
+                    <WarmupChart Items="@ApfNarrative.WarmupRuns" />
+
+                    <Callout Label="On the “~1,000,000” figure" Neutral="true">
+                        <p>@ApfNarrative.ClaimsNote</p>
+                    </Callout>
+                </CaseStudySection>
+
+                <CaseStudySection Id="cs-stories" Eyebrow="What broke"
+                                  Title="Six things that went wrong, and what they cost">
+                    <p class="prose">
+                        The figures below come from the commits that made the changes. Every performance change
+                        in this project carries a before and an after, because a change with no number attached
+                        is a guess with good intentions.
+                    </p>
+
+                    <PayloadBars Items="@PayloadComparison"
+                                 Label="Price payload before and after the columnar rewrite" />
+
+                    <p class="prose">
+                        That is the wire size before compression. The same JSON compresses another 10–20× once
+                        <code>encode zstd gzip</code> is switched on at the edge, which is the third fix in the
+                        first story below.
+                    </p>
+
+                    @foreach (var (story, index) in ApfCaseStudy.Stories.Select((s, i) => (s, i)))
+                    {
+                        <StoryCard Story="@story" Number="@(index + 1)" />
+                    }
+                </CaseStudySection>
+
+                <CaseStudySection Id="cs-confidence" Eyebrow="The ranking model"
+                                  Title="Making stale prices sink instead of outrank">
+                    <p class="prose">@ApfNarrative.ConfidenceIntro</p>
+
+                    <div class="formula" role="math"
+                         aria-label="factor equals 0.2 plus 0.8 times e to the minus sell age in hours over 48, times e to the minus material age in hours over 96">
+                        <span class="var">factor</span> <span class="op">=</span> <span class="num">0.2</span>
+                        <span class="op">+</span> <span class="num">0.8</span> <span class="op">·</span>
+                        e<sup><span class="op">−</span><span class="var">sellAgeH</span><span class="op">/</span><span class="num">48</span></sup>
+                        <span class="op">·</span>
+                        e<sup><span class="op">−</span><span class="var">matAgeH</span><span class="op">/</span><span class="num">96</span></sup>
+                    </div>
+
+                    <p class="prose">
+                        Drag either age and the curve, the marker and both scores recompute. This is the same
+                        arithmetic the server runs — the two implementations are pinned to float precision
+                        against each other by a parity test, because a ranking that disagrees with the badge
+                        beside it is worse than no badge.
+                    </p>
+
+                    <FreshnessLab />
+
+                    <div class="grid-auto cs-notes">
+                        <Card><h3 class="mini__title">Why materials count for half</h3><p class="prose">@ApfNarrative.ConfidenceHalfWeight</p></Card>
+                        <Card><h3 class="mini__title">A product, not a max()</h3><p class="prose">@ApfNarrative.ConfidenceMultiplicative</p></Card>
+                        <Card><h3 class="mini__title">Why there is a floor</h3><p class="prose">@ApfNarrative.ConfidenceFloor</p></Card>
+                    </div>
+
+                    <FactTable Items="@CalibrationRows"
+                               Caption="Calibration points documented in the code's own comments" />
+
+                    <Callout Label="What I can't justify">
+                        <p>@ApfNarrative.ConfidenceHonesty</p>
+                    </Callout>
+                </CaseStudySection>
+
+                <CaseStudySection Id="cs-tradeoffs" Eyebrow="Trade-offs"
+                                  Title="Decisions I'd defend, written down where they're made">
+                    <div class="grid-auto">
+                        @foreach (var item in ApfCaseStudy.Tradeoffs)
+                        {
+                            <Card>
+                                <h3 class="mini__title">@item.Label</h3>
+                                <p class="prose">@item.Value</p>
+                            </Card>
+                        }
+                    </div>
+
+                    <Callout Label="What I'd show a reviewer" Neutral="true">
+                        <p>@ApfNarrative.Closing</p>
+                    </Callout>
+
+                    <div class="hero__actions cs-outro">
+                        <a class="btn btn--primary" href="/#contact">
+                            Talk to me about it
+                            <Icon Name="arrow-right" Size="16" />
+                        </a>
+                        <a class="btn" href="/#projects">All projects</a>
+                    </div>
+                </CaseStudySection>
+
+            </div>
+
+            <CaseStudyToc Entries="@Toc" />
+        </div>
+    </div>
+</article>
+
+@code {
+    private static readonly CaseStudyToc.Entry[] Toc =
+    {
+        new("cs-problem", "The problem"),
+        new("cs-architecture", "Architecture"),
+        new("cs-swap", "Versioned swap"),
+        new("cs-stories", "What broke"),
+        new("cs-confidence", "Ranking model"),
+        new("cs-tradeoffs", "Trade-offs"),
+    };
+
+    private static readonly PayloadBars.Bar[] PayloadComparison =
+    {
+        new("list-of-dicts, all five quality tiers", "129 MB", 1.0),
+        new("columnar, active qualities only", "13.9 MB", 13.9 / 129.0),
+    };
+
+    private static readonly FactRow[] CalibrationRows =
+        ApfCaseStudy.FreshnessPoints
+            .Select(p => new FactRow(p.Condition, p.Factor.ToString("0.00", CultureInfo.InvariantCulture)))
+            .ToArray();
+}

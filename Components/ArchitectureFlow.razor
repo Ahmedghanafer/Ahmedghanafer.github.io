@@ -1,0 +1,80 @@
+@*
+    A pipeline diagram that is real markup rather than a picture: every stage is a
+    button, every explanation is text, and the whole thing reflows to one column on
+    a phone without a horizontally-scrolling SVG. Expanding a stage is a disclosure,
+    so screen readers get the same detail the pointer does.
+*@
+
+<div class="flow @Class">
+    @for (var i = 0; i < Nodes.Count; i++)
+    {
+        var index = i;
+        var node = Nodes[index];
+        var open = _open.Contains(index);
+        var panelId = $"{Id}-stage-{index}";
+
+        <button type="button"
+                class="flow__node"
+                aria-expanded="@(open ? "true" : "false")"
+                aria-controls="@panelId"
+                @onclick="() => Toggle(index)">
+
+            <span class="flow__step" aria-hidden="true">@($"{index + 1:00}")</span>
+
+            <span>
+                <span class="flow__head">
+                    <Icon Name="@node.Icon" Size="16" Class="flow__icon" />
+                    <span class="flow__label">@node.Label</span>
+                    <span class="flow__sub">@node.Sub</span>
+                    @if (node.Highlight)
+                    {
+                        <span class="tag tag--accent">the idea</span>
+                    }
+                    <span class="flow__tech" aria-hidden="true">@(open ? "hide" : "detail")</span>
+                </span>
+
+                <span class="flow__detail" id="@panelId">
+                    <span>
+                        <p>@node.Detail</p>
+                    </span>
+                </span>
+            </span>
+        </button>
+
+        @if (index < Nodes.Count - 1)
+        {
+            <div class="flow__link" aria-hidden="true">
+                <span class="spark"></span>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<FlowNode> Nodes { get; set; } = Array.Empty<FlowNode>();
+
+    /// <summary>Prefix for the generated panel ids — unique per diagram on a page.</summary>
+    [Parameter] public string Id { get; set; } = "flow";
+
+    [Parameter] public string? Class { get; set; }
+
+    /// <summary>Stages open on first paint. The two that carry the design's main idea.</summary>
+    [Parameter] public bool OpenHighlights { get; set; } = true;
+
+    private readonly HashSet<int> _open = new();
+
+    protected override void OnInitialized()
+    {
+        if (!OpenHighlights) return;
+
+        for (var i = 0; i < Nodes.Count; i++)
+        {
+            if (Nodes[i].Highlight) _open.Add(i);
+        }
+    }
+
+    private void Toggle(int index)
+    {
+        if (!_open.Remove(index)) _open.Add(index);
+    }
+}

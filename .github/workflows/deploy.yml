@@ -1,0 +1,75 @@
+name: Publish to GitHub Pages
+
+# Manual for now — deployment is a decision, not a side effect of pushing.
+# Flip `push` back on once the site is where you want it.
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; queued runs supersede rather than race.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # Relinks the runtime against what this app actually calls, which is a
+      # real size win over the prebuilt dotnet.native.wasm.
+      - name: Install wasm-tools
+        run: dotnet workload install wasm-tools
+
+      - name: Publish
+        run: dotnet publish Portfolio.csproj -c Release -o dist --nologo
+
+      - name: Prepare static output
+        run: |
+          set -euo pipefail
+          ROOT="dist/wwwroot"
+          REPO="${GITHUB_REPOSITORY#*/}"
+
+          # A user/org site is served from the domain root; a project site from
+          # /<repo>/. Blazor resolves every asset against <base href>, so this is
+          # the one thing that has to be right or nothing loads.
+          if [[ "$REPO" == *.github.io ]]; then BASE="/"; else BASE="/$REPO/"; fi
+          echo "Base href: $BASE"
+          sed -i "s|<base href=\"/\" />|<base href=\"$BASE\" />|g" "$ROOT/index.html"
+
+          # SPA fallback: Pages serves 404.html for unknown paths, and because it
+          # is byte-identical to index.html the Blazor router picks the route up
+          # from the URL and renders it. Copied after the rewrite so both agree.
+          cp "$ROOT/index.html" "$ROOT/404.html"
+
+          # Stop Jekyll stripping _framework/ and _content/.
+          touch "$ROOT/.nojekyll"
+
+          ls -la "$ROOT"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/wwwroot
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

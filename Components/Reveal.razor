@@ -1,0 +1,24 @@
+@*
+    Wraps content in a scroll-reveal target. The visible end state is the CSS
+    default, so if IntersectionObserver never fires — reduced motion, an old
+    browser, a blocked module — the content is simply there.
+*@
+
+<div class="reveal @Class" style="@DelayStyle" @attributes="Extra">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    /// <summary>Stagger, in milliseconds. Kept small — this is punctuation, not choreography.</summary>
+    [Parameter] public int Delay { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? Extra { get; set; }
+
+    private string? DelayStyle => Delay > 0
+        ? $"--reveal-delay:{Delay.ToString(CultureInfo.InvariantCulture)}ms"
+        : null;
+}

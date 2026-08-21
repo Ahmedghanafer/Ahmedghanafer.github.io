@@ -1,0 +1,26 @@
+@*  Contact rows. Each is a full-width link with its own label column, so the
+    list reads as a table without being one. *@
+
+<div class="contact-links">
+    @foreach (var link in Links)
+    {
+        var external = link.Href.StartsWith("http", StringComparison.OrdinalIgnoreCase);
+
+        <a class="contact-link"
+           href="@link.Href"
+           target="@(external ? "_blank" : null)"
+           rel="@(external ? "me noopener noreferrer" : null)">
+
+            <span class="contact-link__label">@link.Label</span>
+            <span class="contact-link__value">@link.Value</span>
+
+            <span class="contact-link__arrow" aria-hidden="true">
+                <Icon Name="arrow-up-right" Size="20" />
+            </span>
+        </a>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<ContactLink> Links { get; set; } = Array.Empty<ContactLink>();
+}
