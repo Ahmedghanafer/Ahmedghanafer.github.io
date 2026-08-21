@@ -72,10 +72,12 @@ public sealed class JsInterop : IAsyncDisposable
 
     /* --- case-study scrollspy ------------------------------------------- */
 
-    public ValueTask StartScrollSpyAsync<T>(string[] ids, DotNetObjectReference<T> reference)
-        where T : class => CallAsync("startScrollSpy", ids, reference);
+    /// <summary>Returns a token; pass it to <see cref="StopScrollSpyAsync"/> so a late
+    /// teardown from an outgoing page cannot cancel the incoming page's spy.</summary>
+    public ValueTask<int> StartScrollSpyAsync<T>(string[] ids, DotNetObjectReference<T> reference)
+        where T : class => CallAsync<int>("startScrollSpy", ids, reference);
 
-    public ValueTask StopScrollSpyAsync() => CallAsync("stopScrollSpy");
+    public ValueTask StopScrollSpyAsync(int token) => CallAsync("stopScrollSpy", token);
 
     /* --- runtime telemetry ---------------------------------------------- */
 

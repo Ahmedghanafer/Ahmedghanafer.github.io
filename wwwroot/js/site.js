@@ -113,11 +113,21 @@ export function watchHeader() {
 let spyObserver = null;
 let spyRef = null;
 let spyActive = null;
+let spyToken = 0;
 
+/**
+ * Reports which of `ids` is the current section.
+ *
+ * Returns a token. Two components use this — the home nav and the case-study
+ * table of contents — and during a route change both are briefly alive, so a
+ * stop only takes effect if it names the run it started. Without that, the
+ * outgoing component's teardown silently kills the incoming one's spy.
+ */
 export function startScrollSpy(ids, dotNetRef) {
-    stopScrollSpy();
-    if (!ids || !ids.length || !("IntersectionObserver" in window)) return;
+    forceStopScrollSpy();
+    if (!ids || !ids.length || !("IntersectionObserver" in window)) return 0;
 
+    const token = ++spyToken;
     spyRef = dotNetRef;
     const onScreen = new Set();
 
@@ -153,9 +163,15 @@ export function startScrollSpy(ids, dotNetRef) {
     });
 
     publish();
+    return token;
 }
 
-export function stopScrollSpy() {
+export function stopScrollSpy(token) {
+    if (token && token !== spyToken) return;   // a stale teardown; leave the live spy alone
+    forceStopScrollSpy();
+}
+
+function forceStopScrollSpy() {
     if (spyObserver) { spyObserver.disconnect(); spyObserver = null; }
     spyRef = null;
     spyActive = null;

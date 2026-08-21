@@ -1,4 +1,4 @@
-@implements IDisposable
+@implements IAsyncDisposable
 @inject NavigationManager Nav
 @inject JsInterop Js
 
@@ -54,6 +54,9 @@
 @code {
     private bool _menuOpen;
     private string _activeSection = "";
+    private DotNetObjectReference<SiteHeader>? _self;
+    private int _spyToken;
+    private bool _spyRunning;
 
     private sealed record NavItem(string Id, string Label);
 
@@ -65,7 +68,32 @@
         new("contact", "Contact"),
     };
 
+    // "hero" is spied on but is not a nav item: at the top of the page it is the
+    // current section, which is how nothing gets highlighted before the first one.
+    private static readonly string[] SpyIds =
+        new[] { "hero" }.Concat(Sections.Select(s => s.Id)).ToArray();
+
     protected override void OnInitialized() => Nav.LocationChanged += OnLocationChanged;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // The nav highlight follows the scroll position, but only on the home page —
+        // elsewhere the case study's own table of contents owns the spy.
+        if (OnHome && !_spyRunning)
+        {
+            _self ??= DotNetObjectReference.Create(this);
+            _spyToken = await Js.StartScrollSpyAsync(SpyIds, _self);
+            _spyRunning = _spyToken != 0;
+        }
+    }
+
+    [JSInvokable]
+    public void OnSectionChanged(string id)
+    {
+        if (_activeSection == id) return;
+        _activeSection = id;
+        StateHasChanged();
+    }
 
     private bool OnHome
     {
@@ -104,11 +132,25 @@
         Nav.NavigateTo("/");
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         _menuOpen = false;
+
+        // Hand the spy over before the next page renders and starts its own.
+        if (_spyRunning && !OnHome)
+        {
+            _spyRunning = false;
+            await Js.StopScrollSpyAsync(_spyToken);
+        }
+
+        _activeSection = "";
         StateHasChanged();
     }
 
-    public void Dispose() => Nav.LocationChanged -= OnLocationChanged;
+    public async ValueTask DisposeAsync()
+    {
+        Nav.LocationChanged -= OnLocationChanged;
+        if (_spyRunning) await Js.StopScrollSpyAsync(_spyToken);
+        _self?.Dispose();
+    }
 }

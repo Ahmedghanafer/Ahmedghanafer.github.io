@@ -28,6 +28,7 @@
     [Parameter, EditorRequired] public IReadOnlyList<Entry> Entries { get; set; } = Array.Empty<Entry>();
 
     private DotNetObjectReference<CaseStudyToc>? _self;
+    private int _spyToken;
     private string? _active;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -35,7 +36,7 @@
         if (!firstRender) return;
 
         _self = DotNetObjectReference.Create(this);
-        await Js.StartScrollSpyAsync(Entries.Select(e => e.Id).ToArray(), _self);
+        _spyToken = await Js.StartScrollSpyAsync(Entries.Select(e => e.Id).ToArray(), _self);
     }
 
     [JSInvokable]
@@ -54,7 +55,7 @@
 
     public async ValueTask DisposeAsync()
     {
-        await Js.StopScrollSpyAsync();
+        await Js.StopScrollSpyAsync(_spyToken);
         _self?.Dispose();
     }
 }
