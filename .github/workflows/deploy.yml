@@ -1,11 +1,10 @@
 name: Publish to GitHub Pages
 
-# Manual for now — deployment is a decision, not a side effect of pushing.
-# Flip `push` back on once the site is where you want it.
+# Publishes on every push to main, and on demand.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
-  # push:
-  #   branches: [main]
 
 permissions:
   contents: read
