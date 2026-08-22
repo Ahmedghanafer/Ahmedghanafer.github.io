@@ -8,7 +8,7 @@ namespace Portfolio.Services;
 ///
 /// Every call is guarded. A blocked module load, a browser without
 /// IntersectionObserver, or a disposed circuit must degrade to a fully readable
-/// page rather than throw — the content is complete without any of this, only
+/// page rather than throw, the content is complete without any of this, only
 /// the motion is missing.
 /// </summary>
 public sealed class JsInterop : IAsyncDisposable

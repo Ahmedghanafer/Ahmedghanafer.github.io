@@ -7,7 +7,7 @@
 // rendering stays in Blazor.
 //
 // Nothing in this file is load-bearing for content. If the module fails to load,
-// the page is still complete — only the motion is missing.
+// the page is still complete, only the motion is missing.
 // ---------------------------------------------------------------------------
 
 const THEME_KEY = "ahg-theme";
@@ -46,7 +46,7 @@ let failsafeArmed = false;
  * Content must never be permanently invisible.
  *
  * If nothing has revealed a couple of seconds after the first scan, the observer
- * is not firing in this environment — a background tab that never composites, a
+ * is not firing in this environment, a background tab that never composites, a
  * prerender, an engine quirk. In that case drop the effect and show everything:
  * a missing animation is a rounding error, a blank page is a broken site.
  */
@@ -118,8 +118,8 @@ let spyToken = 0;
 /**
  * Reports which of `ids` is the current section.
  *
- * Returns a token. Two components use this — the home nav and the case-study
- * table of contents — and during a route change both are briefly alive, so a
+ * Returns a token. Two components use this, the home nav and the case-study
+ * table of contents, and during a route change both are briefly alive, so a
  * stop only takes effect if it names the run it started. Without that, the
  * outgoing component's teardown silently kills the incoming one's spy.
  */

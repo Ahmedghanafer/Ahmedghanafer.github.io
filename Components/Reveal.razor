@@ -1,7 +1,7 @@
 @*
     Wraps content in a scroll-reveal target. The visible end state is the CSS
-    default, so if IntersectionObserver never fires — reduced motion, an old
-    browser, a blocked module — the content is simply there.
+    default, so if IntersectionObserver never fires (reduced motion, an old
+    browser, a blocked module), the content is simply there.
 *@
 
 <div class="reveal @Class" style="@DelayStyle" @attributes="Extra">
@@ -12,7 +12,7 @@
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public string? Class { get; set; }
 
-    /// <summary>Stagger, in milliseconds. Kept small — this is punctuation, not choreography.</summary>
+    /// <summary>Stagger, in milliseconds. Kept small: this is punctuation, not choreography.</summary>
     [Parameter] public int Delay { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]

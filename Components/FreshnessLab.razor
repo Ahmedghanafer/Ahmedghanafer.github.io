@@ -17,7 +17,7 @@
         <svg viewBox="0 0 440 240" role="img" aria-label="@ChartSummary">
 
             @* Horizontal guides. Razor reserves <text> inside code blocks, so the
-               labels are written out rather than looped — five of them, once. *@
+               labels are written out rather than looped, five of them, once. *@
             @foreach (var guide in Guides)
             {
                 <line x1="38" x2="428" y1="@N(Y(guide.Value))" y2="@N(Y(guide.Value))"

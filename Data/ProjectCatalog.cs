@@ -21,7 +21,7 @@ public static class ProjectCatalog
             Description:
                 "A live market-analysis platform for Albion Online. Prices arrive over NATS, land in PostgreSQL, and a "
                 + "five-minute daemon walks the whole catalogue to precompute every viable craft, flip and salvage route. "
-                + "The web request does no calculation at all — it pages a versioned results table in rank order. "
+                + "The web request does no calculation at all; it pages a versioned results table in rank order. "
                 + "I own the whole thing: schema, ingest, ranking model, front end, VPS.",
             Stack: new[] { "Python 3.12", "Flask 3.1", "PostgreSQL 16", "psycopg3 · raw SQL", "NATS", "Vanilla JS", "Caddy", "Cloudflare" },
             Metrics: new[]
@@ -43,7 +43,7 @@ public static class ProjectCatalog
             Tagline: "Automating the console certification process for game developers.",
             Description:
                 "A .NET 8 SaaS API on a Clean Architecture split, designed around high availability and secure handling "
-                + "of third-party integration data. Pre-MVP — the case study goes up when there is something honest to measure.",
+                + "of third-party integration data. Pre-MVP. The case study goes up when there is something honest to measure.",
             Stack: new[] { ".NET 8", "C#", "Entity Framework", "Clean Architecture", "DDD", "REST API" },
             Metrics: Array.Empty<Metric>(),
             CaseStudyHref: null,
@@ -55,7 +55,7 @@ public static class ProjectCatalog
             Slug: "this-site",
             Title: "This site",
             Kind: "Blazor WebAssembly",
-            Tagline: "C# in the browser. No React, no Vue, no bundler — the .NET runtime and a component tree.",
+            Tagline: "C# in the browser. No React, no Vue, no bundler, just the .NET runtime and a component tree.",
             Description:
                 "A standalone Blazor WebAssembly app compiled to static files. Routing, state, theming and every diagram "
                 + "on the case-study page are C# components. The only JavaScript is a small interop module for the three "

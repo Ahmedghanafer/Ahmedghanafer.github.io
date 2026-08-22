@@ -1,7 +1,7 @@
 # Serving the published output as static files from a VPS.
 #
 # `dotnet publish -c Release -o dist` puts everything under dist/wwwroot.
-# Copy that directory to the server; nothing else is needed — no runtime,
+# Copy that directory to the server; nothing else is needed, no runtime,
 # no reverse-proxied app process. The .NET runtime ships to the browser.
 
 example.com {

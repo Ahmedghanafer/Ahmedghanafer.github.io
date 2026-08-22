@@ -1,13 +1,13 @@
 @page "/projects/albion-profit-forge"
 
 @*
-    A case study owns its own route and its own composition. The next one — a
-    different stack, a different story shape — gets its own page and shares only
+    A case study owns its own route and its own composition. The next one (a
+    different stack, a different story shape) gets its own page and shares only
     the primitives: CaseStudySection, ArchitectureFlow, StoryCard, Callout,
     FactTable, MetricGrid.
 *@
 
-<PageTitle>Albion Profit Forge — case study — Ahmed Ghanafer</PageTitle>
+<PageTitle>Albion Profit Forge case study | Ahmed Ghanafer</PageTitle>
 
 @{
     var project = ProjectCatalog.BySlug(ProjectCatalog.ApfSlug)!;
@@ -31,7 +31,7 @@
             </div>
 
             <MetricGrid Items="@project.Metrics"
-                        Label="Albion Profit Forge — measured figures"
+                        Label="Albion Profit Forge: measured figures"
                         Class="cs-hero__metrics" />
         </div>
     </header>
@@ -71,7 +71,7 @@
                     <p class="prose">
                         A pass takes tens of seconds and writes about 150,000 rows. Readers must never see a
                         half-built result set, an empty one, or two builds interleaved across page boundaries.
-                        The answer is not a shadow table — it is a version column, which turns visibility into a
+                        The answer is not a shadow table but a version column, which turns visibility into a
                         read-path concern instead of a write-path one.
                     </p>
 
@@ -91,7 +91,7 @@
                         </li>
                         <li>
                             <b>Fail safely.</b> A failed run is closed without promotion and its partial rows are
-                            deleted — a broken pass degrades to stale data, never to no data.
+                            deleted: a broken pass degrades to stale data, never to no data.
                         </li>
                         <li>
                             <b>Reap crashes by age.</b> Runs stuck in <code>running</code> past a timeout are
@@ -153,7 +153,7 @@
 
                     <p class="prose">
                         Drag either age and the curve, the marker and both scores recompute. This is the same
-                        arithmetic the server runs — the two implementations are pinned to float precision
+                        arithmetic the server runs, and the two implementations are pinned to float precision
                         against each other by a parity test, because a ranking that disagrees with the badge
                         beside it is worse than no badge.
                     </p>

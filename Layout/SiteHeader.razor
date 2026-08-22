@@ -77,8 +77,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // The nav highlight follows the scroll position, but only on the home page —
-        // elsewhere the case study's own table of contents owns the spy.
+        // The nav highlight follows the scroll position, but only on the home page, // elsewhere the case study's own table of contents owns the spy.
         if (OnHome && !_spyRunning)
         {
             _self ??= DotNetObjectReference.Create(this);

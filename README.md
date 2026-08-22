@@ -1,8 +1,8 @@
-# Ahmed Ghanafer — portfolio
+# Ahmed Ghanafer portfolio
 
 A personal developer portfolio built as a **standalone Blazor WebAssembly app** on .NET 8,
 published as static files. Routing, state, the theme system and every visualisation are C#
-running in the browser. There is no JavaScript framework, no bundler, and no backend — the
+running in the browser. There is no JavaScript framework, no bundler, and no backend. The
 whole site is a component tree compiled to WebAssembly plus about a hundred lines of interop
 for the handful of things the DOM genuinely owns.
 
@@ -28,14 +28,14 @@ dotnet publish -c Release -o dist             # static output lands in dist/wwwr
 ## Structure
 
 ```
-Program.cs                  Service registration — two services, no HttpClient (there is no API)
+Program.cs                  Service registration, two services, no HttpClient (there is no API)
 App.razor                   Router, NotFound branch
 _Imports.razor
 
 Data/                       All content, as plain records. No CMS, no markdown loader.
   Models.cs                 Shared record types: Profile, Role, ProjectSummary, FlowNode, …
   SiteData.cs               CV-derived content: profile, experience, skills, languages, schooling
-  ProjectCatalog.cs         The project index — one entry per project
+  ProjectCatalog.cs         The project index, one entry per project
   ApfCaseStudy.cs           Measured facts for the Albion Profit Forge case study
   ApfNarrative.cs           The written narrative for the same case study
 
@@ -71,7 +71,7 @@ Services/
 wwwroot/
   index.html                Pre-paint theme script, boot screen, noscript fallback
   css/app.css               The design system, in numbered layers
-  js/site.js                localStorage, IntersectionObserver, scroll, timing API — nothing else
+  js/site.js                localStorage, IntersectionObserver, scroll, timing API, nothing else
   favicon.svg               Theme-aware
   .nojekyll
 
@@ -87,23 +87,23 @@ The architecture is built for this. Two steps:
    `/projects/<slug>`.
 2. Add `Pages/Projects/<Name>.razor` with a matching `@page` directive.
 
-The new page composes the same primitives — `CaseStudySection`, `Callout`, `FactTable`,
-`MetricGrid`, `StoryCard`, `ArchitectureFlow`, `CaseStudyToc` — but owns its own layout, so a
+The new page composes the same primitives (`CaseStudySection`, `Callout`, `FactTable`,
+`MetricGrid`, `StoryCard`, `ArchitectureFlow`, `CaseStudyToc`) but owns its own layout, so a
 Python/Postgres write-up and a .NET one don't have to pretend to be the same shape. `ProjectShowcase`
 picks up the new entry automatically; it knows no project by name.
 
-Only one project may set `IsCentrepiece` — that one leads the section, the rest become cards.
+Only one project may set `IsCentrepiece`: that one leads the section, the rest become cards.
 
 ## Design system
 
 Everything lives in `wwwroot/css/app.css`, in numbered layers: tokens → reset → type → layout →
 components → motion → print. There are no utility classes and no framework.
 
-- **Type** — Archivo for display, IBM Plex Sans for body, IBM Plex Mono for labels and figures.
-- **Colour** — a warm neutral surface ramp with a terracotta accent
+- **Type**: Archivo for display, IBM Plex Sans for body, IBM Plex Mono for labels and figures.
+- **Colour**: a warm neutral surface ramp with a terracotta accent
   (`#b5541d` light, `#e0864a` dark). Every colour is a custom property; dark mode redefines
   the tokens, not the rules.
-- **Theme** — chosen before first paint by an inline script in `index.html`, so there is never a
+- **Theme**: chosen before first paint by an inline script in `index.html`, so there is never a
   flash of the wrong surface while the runtime downloads. `ThemeService` reads that decision back
   and owns everything after it. The choice persists in `localStorage`.
 
@@ -111,12 +111,11 @@ components → motion → print. There are no utility classes and no framework.
 
 - Semantic landmarks, one `h1` per route, no skipped heading levels.
 - Skip link, visible focus rings, `aria-expanded` disclosures, a `role="switch"` theme toggle.
-- Every animation is behind `prefers-reduced-motion`, and the *revealed* state is the CSS default —
-  if `IntersectionObserver` never fires, the content is simply there. A failsafe in `site.js`
+- Every animation is behind `prefers-reduced-motion`, and the *revealed* state is the CSS default: if `IntersectionObserver` never fires, the content is simply there. A failsafe in `site.js`
   drops the effect entirely if nothing has revealed after 2.5 s, because a missing animation is a
   rounding error and a blank page is a broken site.
 - Charts carry text alternatives; measured figures are real `<table>` elements.
-- Wide content (formula, tables) scrolls inside its own container — the page body never does.
+- Wide content (formula, tables) scrolls inside its own container; the page body never does.
 
 ## Deployment
 

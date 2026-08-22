@@ -1,5 +1,5 @@
 /* =====================================================================
-   Ahmed Ghanafer — portfolio design system
+   Ahmed Ghanafer, portfolio design system
    Layer order: tokens → reset → type → layout → components → utilities
    ===================================================================== */
 
@@ -22,7 +22,7 @@
     --c-ink-3: #7d7466;
     --c-ink-4: #a49a8b;
 
-    /* Accent — terracotta */
+    /* Accent, terracotta */
     --c-accent: #b5541d;
     --c-accent-ink: #8f4014;
     --c-accent-soft: rgba(181, 84, 29, 0.10);
@@ -507,7 +507,7 @@ main { position: relative; z-index: 1; display: block; }
 
 .hero__actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 2rem; }
 
-/* Runtime card — the "built in Blazor WASM" signal */
+/* Runtime card, the "built in Blazor WASM" signal */
 .runtime-card {
     border: 1px solid var(--c-line);
     background: var(--c-surface);
@@ -1067,7 +1067,7 @@ input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.15); }
 
 .backlink svg { flex: none; }
 
-/* Numbered procedure — the atomic-swap sequence */
+/* Numbered procedure, the atomic-swap sequence */
 .steps {
     counter-reset: step;
     list-style: none;
@@ -1146,7 +1146,7 @@ input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.15); }
 .lab__volume { border: none; margin: 0; padding: 0; display: grid; gap: .55rem; }
 .lab__volume legend { padding: 0; }
 
-/* Warm-up chart — plain elements so it inherits the type scale and tokens */
+/* Warm-up chart, plain elements so it inherits the type scale and tokens */
 .chart { margin: 2rem 0 0; }
 .chart__bars {
     display: grid;

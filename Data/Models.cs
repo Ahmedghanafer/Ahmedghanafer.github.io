@@ -54,7 +54,7 @@ public sealed record ProjectSummary(
 public sealed record Metric(string Value, string Label, string? Note = null);
 
 /* ---------------------------------------------------------------------
-   Case-study building blocks — shared by every case study, not just APF
+   Case-study building blocks, shared by every case study, not just APF
    --------------------------------------------------------------------- */
 
 /// <summary>One stage in an architecture diagram rendered by <c>ArchitectureFlow</c>.</summary>
