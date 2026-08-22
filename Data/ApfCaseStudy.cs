@@ -203,11 +203,12 @@ public static class ApfCaseStudy
     /// <summary>Calibration points the code's own comments cite for the freshness curve.</summary>
     public static readonly IReadOnlyList<(string Condition, double Factor)> FreshnessPoints = new[]
     {
-        ("Fresh on both legs", 1.00),
-        ("Sell price 24 h old", 0.69),
-        ("Sell 24 h + materials 48 h", 0.58),
-        ("Sell price 5 days old", 0.27),
-        ("The floor, however stale", 0.20),
+        ("Fresh on both legs", 1.000),
+        ("Sell price 24 h old", 0.685),
+        ("Materials 48 h old", 0.685),
+        ("Sell 24 h + materials 48 h", 0.494),
+        ("Sell price 5 days old", 0.266),
+        ("The floor, however stale", 0.200),
     };
 
     /// <summary>Trade-offs the project made deliberately, and says so out loud in its own source.</summary>
