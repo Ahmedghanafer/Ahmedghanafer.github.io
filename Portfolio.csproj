@@ -12,11 +12,19 @@
     <BlazorEnableTimeZoneSupport>false</BlazorEnableTimeZoneSupport>
     <DebuggerSupport>false</DebuggerSupport>
     <EventSourceSupport>false</EventSourceSupport>
-    <UseSystemResourceKeys>true</UseSystemResourceKeys>
 
-    <!-- Trim hard: this app's whole surface is known at compile time. -->
+    <!--
+      Trim, but only as far as Blazor can safely be trimmed.
+
+      TrimMode=full breaks this app: components are created by reflection
+      (Activator.CreateInstance from DefaultComponentActivator), the trimmer
+      cannot see those calls, and it removes the constructors as dead code.
+      The published site then fails at boot with MissingMethodException on the
+      first component it tries to render. Debug builds are not trimmed, so this
+      only ever shows up in published output — test the publish, not the run.
+    -->
     <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>full</TrimMode>
+    <TrimMode>partial</TrimMode>
   </PropertyGroup>
 
   <ItemGroup>
