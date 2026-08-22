@@ -119,8 +119,8 @@ components → motion → print. There are no utility classes and no framework.
 
 ## Deployment
 
-Nothing is deployed automatically. The workflow is `workflow_dispatch` only; the `push` trigger is
-commented out in `.github/workflows/deploy.yml`.
+Every push to `main` publishes through `.github/workflows/deploy.yml`; the same workflow can also be
+run on demand (`gh workflow run deploy.yml --ref main`). Pushing to `main` is a release.
 
 ### GitHub Pages
 
