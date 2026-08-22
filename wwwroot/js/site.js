@@ -221,7 +221,7 @@ export function bootStats() {
         transferKb = Math.round(bytes / 1024);
     } catch { /* timing API unavailable; zeros read as "not measured" */ }
 
-    // Prefer the time to first paint when the browser reports it - it is closer
+    // Prefer the time to first paint when the browser reports it, since that is closer
     // to what the visitor experienced than DOMContentLoaded.
     try {
         const paint = performance.getEntriesByName("first-contentful-paint")[0];

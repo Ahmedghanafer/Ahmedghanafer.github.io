@@ -27,7 +27,7 @@ public static class SiteData
         new Role(
             Title: "Founder & Lead Developer",
             Company: "Self-employed",
-            Period: "Feb 2025 – Present",
+            Period: "Feb 2025 to Present",
             Location: "Stockholm",
             Blurb: "Building and operating my own products end to end: architecture, database, deployment, and the "
                  + "on-call pager that is also me.",
@@ -44,7 +44,7 @@ public static class SiteData
         new Role(
             Title: "Fullstack Consultant",
             Company: "SweetSystems",
-            Period: "Aug 2021 – Feb 2025",
+            Period: "Aug 2021 to Feb 2025",
             Location: "Stockholm",
             Blurb: "Three and a half years leading development of custom CRM platforms and automation tools, each one "
                  + "shaped around a different client's actual process rather than a template.",
@@ -59,7 +59,7 @@ public static class SiteData
         new Role(
             Title: "Fullstack Web Developer",
             Company: "Keystone Media Group",
-            Period: "Sep 2018 – Aug 2021",
+            Period: "Sep 2018 to Aug 2021",
             Location: "Stockholm",
             Blurb: "First professional role. Shipped features into a live product on a small team, which meant learning "
                  + "the whole stack rather than a slice of it.",
@@ -95,8 +95,8 @@ public static class SiteData
     public static readonly IReadOnlyList<Education> Schooling = new[]
     {
         new Education("ASP.NET MVC 5", "Lexicon Yrkeshögskola", "2018", null),
-        new Education("SVA Grund (del 2)", "Eductus", "2017–2018", "Nacka"),
-        new Education("Mathematics", "Tishreen University", "2014–2015", "Latakia, Syria"),
+        new Education("SVA Grund (del 2)", "Eductus", "2017-2018", "Nacka"),
+        new Education("Mathematics", "Tishreen University", "2014-2015", "Latakia, Syria"),
     };
 
     /// <summary>Rendered in the hero's runtime card: the "built in Blazor WebAssembly" signal.</summary>

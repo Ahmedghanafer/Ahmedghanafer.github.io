@@ -94,7 +94,7 @@ public static class ApfCaseStudy
                 + "encode zstd gzip at the edge, which had simply never been switched on.",
             Before: "129 MB",
             After: "13.9 MB",
-            DeltaNote: "on the wire before compression, which takes another 10–20× off",
+            DeltaNote: "on the wire before compression, which takes another 10-20× off",
             Lesson: "Serialization shape is a performance decision. Nobody profiles the key names."),
 
         new EngineeringStory(
@@ -123,7 +123,7 @@ public static class ApfCaseStudy
                 "After a dump import the history table held 742 MB of hourly JSON blobs across 54k keys, 13.6 KB each on "
                 + "average, 3.1 GB on disk with rewrite bloat. The only consumer of that data reads the last bucket of "
                 + "each blob. A single full-catalogue stats recompute parsed roughly a gigabyte of JSON into memory at "
-                + "once, and the run log showed the process peaking at 4.6–5.1 GB.",
+                + "once, and the run log showed the process peaking at 4.6-5.1 GB.",
             Fix:
                 "Retention caps applied at every merge instead of at read time, a one-off truncation at import end, and "
                 + "the stats path re-plumbed to iterate 200 items at a time so peak memory is one chunk regardless of "
@@ -178,7 +178,7 @@ public static class ApfCaseStudy
             Problem:
                 "Nothing was reported broken. But between two builds the precomputed Black Market rows had drifted from "
                 + "1,202 to 351 purely on ranking competition, while the underlying data was verifiably unchanged at "
-                + "28,883 rows. Filtering to a single sell city reached only 9–20% of craftable items; the Black Market, "
+                + "28,883 rows. Filtering to a single sell city reached only 9-20% of craftable items; the Black Market, "
                 + "5.4% (336 of 6,194). The other 94% existed in the price table and were simply never stored.",
             Fix:
                 "Add per-item coverage rows so every item stays reachable whether or not it wins the global ranking, and "

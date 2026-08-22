@@ -8,7 +8,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// Scoped is effectively singleton in a WebAssembly host - one browser, one scope.
+// Scoped is effectively singleton in a WebAssembly host: one browser, one scope.
 builder.Services.AddScoped<JsInterop>();
 builder.Services.AddScoped<ThemeService>();
 

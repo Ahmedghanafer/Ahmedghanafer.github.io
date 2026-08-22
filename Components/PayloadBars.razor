@@ -18,7 +18,7 @@
 </div>
 
 @code {
-    /// <param name="Fraction">0–1, relative to the largest bar in the set.</param>
+    /// <param name="Fraction">0-1, relative to the largest bar in the set.</param>
     public sealed record Bar(string Name, string Value, double Fraction, bool Muted = false);
 
     [Parameter, EditorRequired] public IReadOnlyList<Bar> Items { get; set; } = Array.Empty<Bar>();
