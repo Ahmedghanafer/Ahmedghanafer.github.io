@@ -189,6 +189,29 @@ public static class ApfCaseStudy
             After: "91.0% reachable",
             DeltaNote: "3.3× the rows, 2× the time, 35% less peak memory",
             Lesson: "Row counts moving without data moving is the signal. Watch invariants, not just errors."),
+
+        new EngineeringStory(
+            Kicker: "Observability",
+            Title: "Twenty-two signups and nothing that said what they did",
+            Problem:
+                "A Reddit post brought the first real cohort. The database could say who registered and the last time "
+                + "their token touched the API, and that was the whole story: one timestamp per account. Carts, ledger "
+                + "rows and saved profiles recorded what people built, and the batch had built nothing, which left the "
+                + "question that mattered unanswerable. Did they bounce off the first screen, or reach a result and find "
+                + "it not worth a second visit? Those need opposite fixes.",
+            Fix:
+                "One append-only event table with a closed list of fifteen names, no analytics library. Public page "
+                + "views are recorded server-side on the way out, with a first-party visitor cookie and the ref tag or "
+                + "referrer host, so crawlers and ad blockers are handled in one place; the thirty public pages share no "
+                + "script, so the client was the wrong layer. Registration stamps the cookie and source onto the account, "
+                + "joining the pre-signup trail to the user. The browser batches tab, detail, paywall and checkout events "
+                + "through one endpoint that always returns 204, never records the admin token, and drops anything off "
+                + "the list. The report derives landing page, per-page conversion and assisted signups from first-view "
+                + "attribution, plus a per-page hour-of-day heatmap.",
+            Before: "1 timestamp",
+            After: "15 events, per page",
+            DeltaNote: "first read: 22 signups, 4 returned after a day, 3 built anything, the Reddit batch left no trace",
+            Lesson: "What users build is not what users do. Record the trail before the visit you need to explain."),
     };
 
     /// <summary>The precompute runner's own before/after arc, oldest first.</summary>
