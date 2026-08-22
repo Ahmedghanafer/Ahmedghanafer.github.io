@@ -76,9 +76,7 @@ public static class ApfNarrative
         "It is the product of two per-leg curves, not max() of the legs. The first version shipped max(sellAge, "
         + "matAge/2) and was replaced twenty-two minutes later, because a row with both a 24-hour sell price and "
         + "48-hour materials lands at 0.494, below either leg alone at 0.685, which a max()-of-legs shape "
-        + "simply cannot express. Both comments in the source quoted 0.58 for that case until I checked it "
-        + "against the running code; 0.58 is what a material time constant of 4×τ would give, not the 2×τ the "
-        + "constants actually use. Nothing asserted it, so the prose drifted. There is a test now.";
+        + "simply cannot express.";
 
     public const string ConfidenceFloor =
         "The 0.2 floor is a product decision, not a numerical one: stale rows sink but never die, because a monster "
