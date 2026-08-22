@@ -20,16 +20,56 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href="/" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
+    <!--
+        Critical CSS, inline and first.
 
-    <link rel="stylesheet" href="css/app.css" />
+        Everything below this block is a network request, and until the first of
+        them lands the browser paints its own default canvas, which is white.
+        That was the flash on load: not the runtime being slow, just an unpainted
+        page. These few rules make the very first frame the real surface, in the
+        right theme, with the boot indicator already styled.
+
+        Kept deliberately tiny. It duplicates a handful of values from app.css;
+        if the palette changes, the two must be changed together.
+    -->
+    <style>
+        :root { color-scheme: light; background: #f7f4f0; }
+        :root[data-theme="dark"] { color-scheme: dark; background: #100e0c; }
+
+        html, body { margin: 0; background: inherit; }
+
+        #blazor-boot {
+            position: fixed; inset: 0; z-index: 999;
+            display: grid; place-content: center; gap: 1.25rem; justify-items: center;
+            background: inherit;
+            font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+        }
+        .boot-mark {
+            font-size: .74rem; letter-spacing: .18em; text-transform: uppercase;
+            color: #7d7466;
+        }
+        :root[data-theme="dark"] .boot-mark { color: #948b7f; }
+
+        .boot-bar { width: 9rem; height: 2px; background: #e0d8ce; border-radius: 2px; overflow: hidden; }
+        :root[data-theme="dark"] .boot-bar { background: #2e2822; }
+        .boot-bar span {
+            display: block; width: 40%; height: 100%; background: #b5541d;
+            animation: bootslide 1.3s cubic-bezier(.22,.61,.36,1) infinite;
+        }
+        :root[data-theme="dark"] .boot-bar span { background: #e0864a; }
+        @keyframes bootslide {
+            0% { transform: translateX(-110%); }
+            100% { transform: translateX(360%); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .boot-bar span { animation: none; width: 100%; }
+        }
+    </style>
 
     <!--
         Theme is applied before first paint so there is no flash of the wrong
-        surface. This is the one script that cannot wait for the .NET runtime.
+        surface. This is the one script that cannot wait for the .NET runtime,
+        and it must stay above the stylesheet links for the same reason.
     -->
     <script>
         (function () {
@@ -45,6 +85,14 @@
             } catch (e) { /* defaults are fine */ }
         })();
     </script>
+
+    <!-- Our own stylesheet first: the font request should not gate the layout. -->
+    <link rel="stylesheet" href="css/app.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
 </head>
 
 <body>
