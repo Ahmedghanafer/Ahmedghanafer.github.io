@@ -45,7 +45,11 @@ public static class ProjectCatalog
                 "A .NET 8 SaaS API for automating console certification, laid out as a Clean Architecture split across "
                 + "Api, Application, Domain and Infrastructure. Paused before launch to put the time into Profit Forge. "
                 + "The case study goes up when there is something honest to measure.",
-            Stack: new[] { ".NET 8", "C#", "Entity Framework", "PostgreSQL", "Clean Architecture", "CQRS", "DDD", "REST API" },
+            Stack: new[]
+            {
+                ".NET 8", "C#", "Entity Framework", "PostgreSQL", "Clean Architecture", "CQRS", "MediatR",
+                "DDD", "REST API", "JWT auth", "Google OAuth", "FluentValidation", "xUnit",
+            },
             Metrics: Array.Empty<Metric>(),
             CaseStudyHref: null,
             ExternalHref: null,
