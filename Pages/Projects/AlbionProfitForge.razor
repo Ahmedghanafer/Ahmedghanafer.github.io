@@ -28,6 +28,15 @@
 
             <div class="cs-hero__foot">
                 <TagList Items="@project.Stack" Label="Albion Profit Forge stack" />
+
+                @if (!string.IsNullOrWhiteSpace(project.ExternalHref))
+                {
+                    <a class="btn btn--ghost btn--sm" href="@project.ExternalHref"
+                       target="_blank" rel="noopener noreferrer">
+                        Visit the live site
+                        <Icon Name="arrow-up-right" Size="16" />
+                    </a>
+                }
             </div>
 
             <MetricGrid Items="@project.Metrics"

@@ -18,13 +18,24 @@
             <TagList Items="@Project.Stack" Label="@($"{Project.Title} stack")" />
         </div>
 
-        @if (!string.IsNullOrWhiteSpace(Project.CaseStudyHref))
+        @if (HasAction)
         {
             <div class="hero__actions">
-                <a class="btn btn--primary" href="@Project.CaseStudyHref">
-                    Read the case study
-                    <Icon Name="arrow-right" Size="16" />
-                </a>
+                @if (!string.IsNullOrWhiteSpace(Project.CaseStudyHref))
+                {
+                    <a class="btn btn--primary" href="@Project.CaseStudyHref">
+                        Read the case study
+                        <Icon Name="arrow-right" Size="16" />
+                    </a>
+                }
+                @if (!string.IsNullOrWhiteSpace(Project.ExternalHref))
+                {
+                    <a class="btn btn--ghost" href="@Project.ExternalHref"
+                       target="_blank" rel="noopener noreferrer">
+                        Visit the live site
+                        <Icon Name="arrow-up-right" Size="16" />
+                    </a>
+                }
                 <span class="mono" style="color:var(--c-ink-4);align-self:center">@Project.Status</span>
             </div>
         }
@@ -36,4 +47,7 @@
 
 @code {
     [Parameter, EditorRequired] public ProjectSummary Project { get; set; } = default!;
+
+    private bool HasAction => !string.IsNullOrWhiteSpace(Project.CaseStudyHref)
+                           || !string.IsNullOrWhiteSpace(Project.ExternalHref);
 }

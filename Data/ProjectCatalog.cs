@@ -32,7 +32,7 @@ public static class ProjectCatalog
                 new Metric("129 → 13.9 MB", "price payload", "before edge compression"),
             },
             CaseStudyHref: "/projects/" + ApfSlug,
-            ExternalHref: null,
+            ExternalHref: "https://albionprofitforge.com",
             Status: "Live · operated by me",
             IsCentrepiece: true),
 
