@@ -42,13 +42,18 @@ public static class ProjectCatalog
             Kind: "SaaS API · .NET 8",
             Tagline: "Automating the console certification process for game developers.",
             Description:
-                "A .NET 8 SaaS API on a Clean Architecture split, designed around high availability and secure handling "
-                + "of third-party integration data. Pre-MVP. The case study goes up when there is something honest to measure.",
-            Stack: new[] { ".NET 8", "C#", "Entity Framework", "Clean Architecture", "DDD", "REST API" },
+                "A .NET 8 SaaS API for automating console certification, laid out as a Clean Architecture split across "
+                + "Api, Application, Domain and Infrastructure. Paused before launch to put the time into Profit Forge. "
+                + "The case study goes up when there is something honest to measure.",
+            Stack: new[]
+            {
+                ".NET 8", "C#", "Entity Framework", "PostgreSQL", "Clean Architecture", "CQRS", "MediatR",
+                "DDD", "REST API", "JWT auth", "Google OAuth", "FluentValidation", "xUnit",
+            },
             Metrics: Array.Empty<Metric>(),
             CaseStudyHref: null,
             ExternalHref: null,
-            Status: "In development",
+            Status: "Paused pre-launch",
             IsCentrepiece: false),
 
         new ProjectSummary(
