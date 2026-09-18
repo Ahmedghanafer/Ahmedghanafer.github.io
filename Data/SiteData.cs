@@ -25,7 +25,7 @@ public static class SiteData
     public static readonly IReadOnlyList<Role> Experience = new[]
     {
         new Role(
-            Title: "Founder & Lead Developer",
+            Title: "Independent Developer",
             Company: "Self-employed",
             Period: "Feb 2025 to Present",
             Location: "Stockholm",
@@ -33,11 +33,9 @@ public static class SiteData
                  + "on-call pager that is also me.",
             Highlights: new[]
             {
-                "Architected and developed a SaaS API that automates the console certification process for game developers.",
-                "Built the backend on .NET 8, Entity Framework and a Clean Architecture split, with high availability and secure third-party data handling as the two hard requirements.",
-                "Ran the market and technical research that decided what was worth building, and what wasn't.",
-                "Kept a product roadmap that balances technical debt against feature priority on the way to an MVP.",
-                "Separately: designed, shipped and now operate Albion Profit Forge, a Python/PostgreSQL analytics platform on a self-managed VPS.",
+                "Designed, shipped and now operate Albion Profit Forge, a Python/PostgreSQL 16 analytics platform on a self-managed VPS: schema, ingest, ranking model, front end and the box it runs on.",
+                "Took a page load from ~1,750 queries down to one per region, and the price payload from 129 MB down to 13.9 MB before compression.",
+                "Built a SaaS API for automating console certification for game developers, on .NET 8 and Entity Framework with a Clean Architecture split, then paused it before launch to put the time into Profit Forge.",
             },
             Stack: new[] { ".NET 8", "Entity Framework", "Clean Architecture", "DDD", "REST API", "PostgreSQL", "Python", "Linux VPS" }),
 
