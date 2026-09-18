@@ -37,7 +37,7 @@ public static class SiteData
                 "Took a page load from ~1,750 queries down to one per region, and the price payload from 129 MB down to 13.9 MB before compression.",
                 "Built a SaaS API for automating console certification for game developers, on .NET 8 and Entity Framework with a Clean Architecture split, then paused it before launch to put the time into Profit Forge.",
             },
-            Stack: new[] { ".NET 8", "Entity Framework", "Clean Architecture", "DDD", "REST API", "PostgreSQL", "Python", "Linux VPS" }),
+            Stack: new[] { ".NET 8", "Entity Framework", "Clean Architecture", "CQRS", "DDD", "REST API", "PostgreSQL", "Python", "Linux VPS" }),
 
         new Role(
             Title: "Fullstack Consultant",
